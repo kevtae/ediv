@@ -1,0 +1,40 @@
+.shoppage {
+  padding-top: 5em;
+  display: flex;
+
+  .left {
+    float: left;
+    width: 33.33%;
+    text-align: center;
+    margin: auto;
+
+    .description {
+      font-size: 12px;
+      padding-left: 100px;
+      padding-right: 100px;
+    }
+  }
+
+  .middle {
+    width: 33.33%;
+    margin: auto;
+
+    .img-container {
+      max-width: 100%;
+    }
+  }
+
+  .right {
+    float: right;
+    width: 33%;
+    margin: 0 auto;
+    text-align: center;
+
+    .shipping {
+      text-align: center;
+      padding-left: 50px;
+      padding-right: 50px;
+      font-weight: lighter;
+    }
+  }
+}

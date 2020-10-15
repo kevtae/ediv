@@ -1,0 +1,96 @@
+.modal {
+  width: 400px;
+  height: 500px;
+  background: #fff;
+  margin: 20px auto;
+  border-radius: 4px;
+  text-align: center;
+  position: relative;
+  -moz-box-shadow: 0px 0px 28px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0px 0px 28px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 28px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+
+  .header {
+    display: flex;
+    color: #607d8b;
+    text-transform: capitalize;
+    font-size: 20px;
+    font-weight: 900;
+    margin-top: 40px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .content {
+    font-size: 12px;
+    color: #b7b7b7;
+    font-weight: lighter;
+    text-transform: capitalize;
+  }
+
+  .close {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    padding: 2px 5px;
+    line-height: 20px;
+    right: 0px;
+    top: 0px;
+    font-size: 24px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #cfcece;
+  }
+}
+
+.main {
+  display: flex;
+
+  .button {
+    margin: auto;
+    min-width: 165px;
+    width: auto;
+    height: 50px;
+    letter-spacing: 0.5px;
+    line-height: 50px;
+    padding: 0 35px 0 35px;
+    font-size: 15px;
+    background-color: black;
+    color: white;
+    text-transform: uppercase;
+
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+
+    &:hover {
+      background-color: white;
+      color: black;
+      border: 1px solid black;
+    }
+
+    &.google-sign-in {
+      background-color: #4285f4;
+      color: white;
+
+      &:hover {
+        background-color: #357ae8;
+        border: none;
+      }
+    }
+
+    &.inverted {
+      background-color: white;
+      color: black;
+      border: 1px solid black;
+
+      &:hover {
+        background-color: black;
+        color: white;
+        border: none;
+      }
+    }
+  }
+}
