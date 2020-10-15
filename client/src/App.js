@@ -11,6 +11,7 @@ import {
 
 import Header from "./components/header.components";
 import ShopPage from "./pages/shop.component";
+import HomePage from "./pages/home.component.jsx";
 
 import "./App.css";
 
@@ -67,6 +68,7 @@ class App extends Component {
         <Header />
         <Switch>
           <Route path="/shop" component={ShopPage} />
+          <Route path="/" component={HomePage} />
         </Switch>
       </div>
     );
