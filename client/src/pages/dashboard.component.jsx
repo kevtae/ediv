@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import StringStorageContract from "../contracts/StringStorage.json";
 import MonthlyContract from "../contracts/MonthlyContract.json";
 import getWeb3 from "../getWeb3";
+import Moment from "react-moment";
 
-class SmartContract extends Component {
+class DashboardPage extends Component {
   constructor(props) {
     super(props);
   }
@@ -21,6 +22,9 @@ class SmartContract extends Component {
     months: 0,
     inputAmount: 0,
     returnAmount: 0,
+    amountLeft: 0,
+    buyer: "",
+    amount: 0,
   };
 
   componentDidMount = async () => {
@@ -57,37 +61,33 @@ class SmartContract extends Component {
 
     const totalAmount = await contract.methods.totalAmout().call();
     const seller = await contract.methods.seller().call();
+    const buyer = await contract.methods.buyer().call();
     const timeGiven = await contract.methods.timeGiven().call();
     const monthlyPayment = await contract.methods.monthlyPayment().call();
-    const months = await contract.methods.months().call();
+    const amount = await contract.methods.amount().call();
+    const amountLeft = await contract.methods.amountLeft().call();
 
     this.setState({
+      buyer: buyer,
       totalAmount: totalAmount,
       seller: seller,
       timeGiven: timeGiven,
       monthlyPayment: monthlyPayment,
-      months: months,
+      amountLeft: amountLeft,
+      amount: amount,
     });
   };
 
   handleChange = (e) => {
-    this.setState({ inputAmount: e.target.value });
-    console.log(this.state.inputAmount);
+    this.setState({ amount: e.target.value });
+    console.log(this.state.amount);
   };
 
   handleClick = async (e) => {
     e.preventDefault();
-    const { accounts, contract, inputAmount } = this.state;
+    const { accounts, contract, amount } = this.state;
 
-    await contract.methods
-      .intialPay()
-      .send({ from: accounts[0], value: inputAmount });
-
-    const initialAmount = await contract.methods.initialAmount().call();
-    this.setState({ initialAmount: initialAmount });
-
-    console.log(initialAmount);
-    this.props.close();
+    await contract.methods.pay().send({ from: accounts[0], value: amount });
   };
 
   render() {
@@ -95,42 +95,30 @@ class SmartContract extends Component {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
     return (
-      <div className="modal">
-        <button className="close" onClick={this.props.close}>
-          &times;
-        </button>
-        <div className="header"> Welcome to Ediv Payment Plan </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <div>
-          <p>Cost: ${this.state.totalAmount}</p>
-          <p>Seller Address:{this.state.seller}</p>
-          <p>
-            Have to pay ${this.state.monthlyPayment} for {this.state.months}{" "}
-            months
-          </p>
-          <p>Please input initial Amount that you want to pay.</p>
-        </div>
-        <form>
-          <label>
-            <input onChange={this.handleChange} type="number" name="name" />
-          </label>
-          <button onClick={this.handleClick}>submit</button>
-        </form>
-        <div className="content">
-          Ediv is a simple way to pay divide your payment plan using smart
-          contract
-          {/* <button
-            className="button-modal"
-            onClick={() => {
-              console.log("modal closed ");
-              this.props.close();
-            }}
-          >
-            close modal
-          </button> */}
+          <p>Welcome {this.state.buyer}</p>
+          <p>you have a debt of ${this.state.amountLeft}</p>
+          <td>
+            Debt is due on: <Moment unix>{this.state.timeGiven}</Moment>
+          </td>
+          <div>
+            <td>
+              Next Payment of ${this.state.monthlyPayment} is due on:{" "}
+              <Moment unix>{this.state.timeGiven - 2592000}</Moment>
+            </td>
+          </div>
+          <p>Enter the amount you wish to pay today</p>
+          <form>
+            <label>
+              <input onChange={this.handleChange} type="number" name="name" />
+            </label>
+            <button onClick={this.handleClick}>submit</button>
+          </form>
         </div>
       </div>
     );
   }
 }
 
-export default SmartContract;
+export default DashboardPage;

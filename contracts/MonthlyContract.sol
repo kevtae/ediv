@@ -1,4 +1,4 @@
-pragma solidity >=0.5.0 <0.7.0;
+pragma solidity >=0.5.0 <0.6.0;
 
 contract MonthlyContract {
     //add state where you can't put money when someone else pays to contract
@@ -9,6 +9,7 @@ contract MonthlyContract {
     uint256 public initialAmount;
     uint256 public timeGiven;
     uint256 public monthlyPayment;
+    uint256 public amount;
     uint256 public months;
     address payable public seller;
     address payable public buyer;
@@ -17,14 +18,12 @@ contract MonthlyContract {
 
     //timegiven is is months. 2592000 seconds is in 1 month.
     constructor(uint256 _totalAmout, uint256 _timeGiven) public {
-        //how many months you have to pay it in
-        months = _timeGiven;
         timeGiven = block.timestamp + (_timeGiven * 2592000);
         totalAmout = _totalAmout;
         seller = msg.sender;
         amountLeft = totalAmout;
-        //how many months you have to pay it for
         monthlyPayment = _totalAmout / _timeGiven;
+        months = _timeGiven;
     }
 
     function intialPay() public payable {
@@ -32,6 +31,12 @@ contract MonthlyContract {
         buyer = msg.sender;
         initialAmount = msg.value;
         amountLeft = totalAmout - initialAmount;
+    }
+
+    function pay() public payable {
+        require(msg.sender == buyer);
+        amount = msg.value;
+        amountLeft = amountLeft - amount;
     }
 
     //neeeds to add condition where money isn't payed in x date,
