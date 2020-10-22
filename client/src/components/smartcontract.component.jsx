@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import StringStorageContract from "../contracts/StringStorage.json";
+import MonthlyContract from "../contracts/MonthlyContract.json";
 import getWeb3 from "../getWeb3";
 
 class SmartContract extends Component {
@@ -8,11 +9,17 @@ class SmartContract extends Component {
   }
 
   state = {
-    storageValue: 0,
     web3: null,
     accounts: null,
     contract: null,
-    text: "",
+    totalAmount: 0,
+    timeGiven: 0,
+    monthlyPayment: 0,
+    seller: "",
+    amountLeft: 0,
+    initialAmount: 0,
+    months: 0,
+    inputAmount: 0,
   };
 
   componentDidMount = async () => {
@@ -25,15 +32,15 @@ class SmartContract extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = StringStorageContract.networks[networkId];
+      const deployedNetwork = MonthlyContract.networks[networkId];
       const instance = new web3.eth.Contract(
-        StringStorageContract.abi,
+        MonthlyContract.abi,
         deployedNetwork && deployedNetwork.address
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance });
+      this.setState({ web3, accounts, contract: instance }, this.initialLoad);
       console.log(this.state.contract);
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -44,20 +51,40 @@ class SmartContract extends Component {
     }
   };
 
+  initialLoad = async () => {
+    const { accounts, contract } = this.state;
+
+    const totalAmount = await contract.methods.totalAmout().call();
+    const seller = await contract.methods.seller().call();
+    const timeGiven = await contract.methods.timeGiven().call();
+    const monthlyPayment = await contract.methods.monthlyPayment().call();
+    const initialAmount = await contract.methods.initialAmount().call();
+    const months = await contract.methods.months().call();
+
+    this.setState({
+      totalAmount: totalAmount,
+      seller: seller,
+      timeGiven: timeGiven,
+      monthlyPayment: monthlyPayment,
+      initialAmount: initialAmount,
+      months: months,
+    });
+  };
+
   handleChange = (e) => {
-    this.setState({ text: e.target.value });
-    console.log(this.state.text);
+    this.setState({ inputAmount: e.target.value });
+    console.log(this.state.inputAmount);
   };
 
   handleClick = async (e) => {
     e.preventDefault();
-    const { accounts, contract, text } = this.state;
+    const { accounts, contract, inputAmount, initialAmount } = this.state;
 
-    await contract.methods.set(text).send({ from: accounts[0] });
+    await contract.methods
+      .intialPay()
+      .send({ from: accounts[0], value: inputAmount });
 
-    const response = await contract.methods.get().call();
-
-    this.setState({ storageValue: response });
+    console.log(initialAmount);
   };
 
   render() {
@@ -70,14 +97,21 @@ class SmartContract extends Component {
           &times;
         </button>
         <div className="header"> Welcome to Ediv Payment Plan </div>
+        <div>
+          <p>Cost: ${this.state.totalAmount}</p>
+          <p>Seller Address:{this.state.seller}</p>
+          <p>
+            Have to pay ${this.state.monthlyPayment} for {this.state.months}{" "}
+            months
+          </p>
+          <p>Please input initial Amount that you want to pay.</p>
+        </div>
         <form>
           <label>
-            Text:
-            <input onChange={this.handleChange} type="text" name="name" />
+            <input onChange={this.handleChange} type="number" name="name" />
           </label>
           <button onClick={this.handleClick}>submit</button>
         </form>
-        <div>The stored value is: {this.state.storageValue}</div>
         <div className="content">
           Ediv is a simple way to pay divide your payment plan using smart
           contract

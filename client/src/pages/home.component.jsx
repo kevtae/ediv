@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import StringStorageContract from "../contracts/StringStorage.json";
+import MonthlyContract from "../contracts/MonthlyContract.json";
+
 import getWeb3 from "../getWeb3";
 
 //Just testing implementing web3 to react.
 
 class HomePage extends Component {
   state = {
-    storageValue: 0,
     web3: null,
     accounts: null,
     contract: null,
-    text: "",
+    totalAmount: 0,
   };
 
   componentDidMount = async () => {
@@ -23,15 +24,14 @@ class HomePage extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = StringStorageContract.networks[networkId];
+      const deployedNetwork = MonthlyContract.networks[networkId];
       const instance = new web3.eth.Contract(
-        StringStorageContract.abi,
+        MonthlyContract.abi,
         deployedNetwork && deployedNetwork.address
       );
-
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance });
+      this.setState({ web3, accounts, contract: instance }, this.initialLoad);
       console.log(this.state.contract);
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -40,6 +40,14 @@ class HomePage extends Component {
       );
       console.error(error);
     }
+  };
+
+  initialLoad = async () => {
+    const { accounts, contract } = this.state;
+
+    const response = await contract.methods.totalAmout().call();
+
+    console.log(response);
   };
 
   handleChange = (e) => {
@@ -71,7 +79,7 @@ class HomePage extends Component {
           </label>
           <button onClick={this.handleClick}>submit</button>
         </form>
-        <div>The stored value is: {this.state.storageValue}</div>
+        <div>The stored value is: {this.state.totalAmount}</div>
       </div>
     );
   }

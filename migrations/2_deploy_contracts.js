@@ -1,5 +1,5 @@
-var StringStorage = artifacts.require("./StringStorage.sol");
+var MonthlyContract = artifacts.require("./MonthlyContract.sol");
 
 module.exports = function (deployer) {
-  deployer.deploy(StringStorage);
+  deployer.deploy(MonthlyContract, 600, 10)
 };
